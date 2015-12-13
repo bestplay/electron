@@ -4,7 +4,11 @@ The `BrowserWindow` class gives you the ability to create a browser window. For
 example:
 
 ```javascript
+// In the main process.
 const BrowserWindow = require('electron').BrowserWindow;
+
+// Or in the renderer process.
+const BrowserWindow = require('electron').remote.BrowserWindow;
 
 var win = new BrowserWindow({ width: 800, height: 600, show: false });
 win.on('closed', function() {
@@ -123,7 +127,6 @@ It creates a new `BrowserWindow` with native properties as set by the `options`.
   * `allowRunningInsecureContent` Boolean - Allow a https page to run
     JavaScript, CSS or plugins from http URLs. Default is `false`.
   * `images` Boolean - Enables image support. Default is `true`.
-  * `java` Boolean - Enables Java support. Default is `false`.
   * `textAreasAreResizable` Boolean - Make TextArea elements resizable. Default
     is `true`.
   * `webgl` Boolean - Enables WebGL support. Default is `true`.
@@ -135,8 +138,6 @@ It creates a new `BrowserWindow` with native properties as set by the `options`.
     canvas features. Default is `false`.
   * `overlayScrollbars` Boolean - Enables overlay scrollbars. Default is
     `false`.
-  * `overlayFullscreenVideo` Boolean - Enables overlay fullscreen video. Default
-    is `false`
   * `sharedWorker` Boolean - Enables Shared Worker support. Default is `false`.
   * `directWrite` Boolean - Enables DirectWrite font rendering system on
      Windows. Default is `true`.
@@ -750,3 +751,9 @@ Sets whether the window should be visible on all workspaces.
 Returns whether the window is visible on all workspaces.
 
 **Note:** This API always returns false on Windows.
+
+### `win.setIgnoreMouseEvents(ignore)` _OS X_
+
+* `ignore` Boolean
+
+Ignore all moused events that happened in the window.

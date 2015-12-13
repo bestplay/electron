@@ -95,7 +95,6 @@ const char kDirectWrite[] = "directWrite";
 const char kExperimentalFeatures[]       = "experimentalFeatures";
 const char kExperimentalCanvasFeatures[] = "experimentalCanvasFeatures";
 const char kOverlayScrollbars[]          = "overlayScrollbars";
-const char kOverlayFullscreenVideo[]     = "overlayFullscreenVideo";
 const char kSharedWorker[]               = "sharedWorker";
 
 }  // namespace options
@@ -120,6 +119,9 @@ const char kDisableHttpCache[] = "disable-http-cache";
 // Register schemes to standard.
 const char kRegisterStandardSchemes[] = "register-standard-schemes";
 
+// Register schemes to handle service worker.
+const char kRegisterServiceWorkerSchemes[] = "register-service-worker-schemes";
+
 // The minimum SSL/TLS version ("tls1", "tls1.1", or "tls1.2") that
 // TLS fallback will accept.
 const char kSSLVersionFallbackMin[] = "ssl-version-fallback-min";
@@ -139,7 +141,6 @@ const char kGuestInstanceID[]            = "guest-instance-id";
 const char kExperimentalFeatures[]       = "experimental-features";
 const char kExperimentalCanvasFeatures[] = "experimental-canvas-features";
 const char kOverlayScrollbars[]          = "overlay-scrollbars";
-const char kOverlayFullscreenVideo[]     = "overlay-fullscreen-video";
 const char kSharedWorker[]               = "shared-worker";
 const char kPageVisibility[]             = "page-visiblity";
 

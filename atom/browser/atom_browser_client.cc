@@ -54,6 +54,8 @@ bool g_suppress_renderer_process_restart = false;
 
 // Custom schemes to be registered to standard.
 std::string g_custom_schemes = "";
+// Custom schemes to be registered to handle service worker.
+std::string g_custom_service_worker_schemes = "";
 
 scoped_refptr<net::X509Certificate> ImportCertFromFile(
     const base::FilePath& path) {
@@ -84,7 +86,12 @@ void AtomBrowserClient::SuppressRendererProcessRestartForOnce() {
 
 void AtomBrowserClient::SetCustomSchemes(
     const std::vector<std::string>& schemes) {
-  g_custom_schemes = JoinString(schemes, ',');
+  g_custom_schemes = base::JoinString(schemes, ",");
+}
+
+void AtomBrowserClient::SetCustomServiceWorkerSchemes(
+    const std::vector<std::string>& schemes) {
+  g_custom_service_worker_schemes = base::JoinString(schemes, ",");
 }
 
 AtomBrowserClient::AtomBrowserClient() : delegate_(nullptr) {
@@ -116,7 +123,6 @@ void AtomBrowserClient::OverrideWebkitPrefs(
   prefs->javascript_can_open_windows_automatically = true;
   prefs->plugins_enabled = true;
   prefs->dom_paste_enabled = true;
-  prefs->java_enabled = false;
   prefs->allow_scripts_to_close_windows = true;
   prefs->javascript_can_access_clipboard = true;
   prefs->local_storage_enabled = true;
@@ -172,6 +178,11 @@ void AtomBrowserClient::AppendExtraCommandLineSwitches(
   if (!g_custom_schemes.empty())
     command_line->AppendSwitchASCII(switches::kRegisterStandardSchemes,
                                     g_custom_schemes);
+
+  // The registered service worker schemes.
+  if (!g_custom_service_worker_schemes.empty())
+    command_line->AppendSwitchASCII(switches::kRegisterServiceWorkerSchemes,
+                                    g_custom_service_worker_schemes);
 
 #if defined(OS_WIN)
   // Append --app-user-model-id.

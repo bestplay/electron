@@ -50,7 +50,6 @@ extern const char kGuestInstanceID[];
 extern const char kExperimentalFeatures[];
 extern const char kExperimentalCanvasFeatures[];
 extern const char kOverlayScrollbars[];
-extern const char kOverlayFullscreenVideo[];
 extern const char kSharedWorker[];
 extern const char kPageVisibility[];
 
@@ -67,6 +66,7 @@ extern const char kPpapiFlashVersion[];
 extern const char kClientCertificate[];
 extern const char kDisableHttpCache[];
 extern const char kRegisterStandardSchemes[];
+extern const char kRegisterServiceWorkerSchemes[];
 extern const char kSSLVersionFallbackMin[];
 extern const char kCipherSuiteBlacklist[];
 extern const char kAppUserModelId[];
@@ -79,7 +79,6 @@ extern const char kGuestInstanceID[];
 extern const char kExperimentalFeatures[];
 extern const char kExperimentalCanvasFeatures[];
 extern const char kOverlayScrollbars[];
-extern const char kOverlayFullscreenVideo[];
 extern const char kSharedWorker[];
 extern const char kPageVisibility[];
 

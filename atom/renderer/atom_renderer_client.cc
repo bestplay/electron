@@ -27,6 +27,7 @@
 #include "third_party/WebKit/public/web/WebLocalFrame.h"
 #include "third_party/WebKit/public/web/WebPluginParams.h"
 #include "third_party/WebKit/public/web/WebKit.h"
+#include "third_party/WebKit/public/web/WebSecurityPolicy.h"
 #include "third_party/WebKit/public/web/WebRuntimeFeatures.h"
 #include "third_party/WebKit/public/web/WebView.h"
 
@@ -129,6 +130,9 @@ void AtomRendererClient::RenderFrameCreated(
     content::RenderFrame* render_frame) {
   new PepperHelper(render_frame);
   new AtomRenderFrameObserver(render_frame, this);
+
+  // Allow file scheme to handle service worker by default.
+  blink::WebSecurityPolicy::registerURLSchemeAsAllowingServiceWorkers("file");
 }
 
 void AtomRendererClient::RenderViewCreated(content::RenderView* render_view) {
@@ -226,8 +230,6 @@ void AtomRendererClient::EnableWebRuntimeFeatures() {
     blink::WebRuntimeFeatures::enableExperimentalCanvasFeatures(true);
   if (IsSwitchEnabled(command_line, switches::kOverlayScrollbars))
     blink::WebRuntimeFeatures::enableOverlayScrollbars(true);
-  if (IsSwitchEnabled(command_line, switches::kOverlayFullscreenVideo))
-    blink::WebRuntimeFeatures::enableOverlayFullscreenVideo(true);
   if (IsSwitchEnabled(command_line, switches::kSharedWorker))
     blink::WebRuntimeFeatures::enableSharedWorker(true);
 }

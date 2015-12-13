@@ -17,6 +17,7 @@
 #include "content/public/common/pepper_plugin_info.h"
 #include "content/public/common/user_agent.h"
 #include "ppapi/shared_impl/ppapi_permissions.h"
+#include "url/url_constants.h"
 
 namespace atom {
 
@@ -31,8 +32,8 @@ content::PepperPluginInfo CreatePepperFlashInfo(const base::FilePath& path,
   plugin.path = path;
   plugin.permissions = ppapi::PERMISSION_ALL_BITS;
 
-  std::vector<std::string> flash_version_numbers;
-  base::SplitString(version, '.', &flash_version_numbers);
+  std::vector<std::string> flash_version_numbers = base::SplitString(
+      version, ".", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   if (flash_version_numbers.size() < 1)
     flash_version_numbers.push_back("11");
   // |SplitString()| puts in an empty string given an empty string. :(
@@ -47,7 +48,7 @@ content::PepperPluginInfo CreatePepperFlashInfo(const base::FilePath& path,
   // E.g., "Shockwave Flash 10.2 r154":
   plugin.description = plugin.name + " " + flash_version_numbers[0] + "." +
       flash_version_numbers[1] + " r" + flash_version_numbers[2];
-  plugin.version = JoinString(flash_version_numbers, '.');
+  plugin.version = base::JoinString(flash_version_numbers, ".");
   content::WebPluginMimeType swf_mime_type(
       content::kFlashPluginSwfMimeType,
       content::kFlashPluginSwfExtension,
@@ -60,6 +61,17 @@ content::PepperPluginInfo CreatePepperFlashInfo(const base::FilePath& path,
   plugin.mime_types.push_back(spl_mime_type);
 
   return plugin;
+}
+
+void ConvertStringWithSeparatorToVector(std::vector<std::string>* vec,
+                                        const char* separator,
+                                        const char* cmd_switch) {
+  auto command_line = base::CommandLine::ForCurrentProcess();
+  auto string_with_separator = command_line->GetSwitchValueASCII(cmd_switch);
+  if (!string_with_separator.empty())
+    *vec = base::SplitString(string_with_separator, separator,
+                             base::TRIM_WHITESPACE,
+                             base::SPLIT_WANT_NONEMPTY);
 }
 
 }  // namespace
@@ -81,19 +93,16 @@ std::string AtomContentClient::GetUserAgent() const {
 }
 
 void AtomContentClient::AddAdditionalSchemes(
-    std::vector<std::string>* standard_schemes,
+    std::vector<url::SchemeWithType>* standard_schemes,
     std::vector<std::string>* savable_schemes) {
-  auto command_line = base::CommandLine::ForCurrentProcess();
-  auto custom_schemes = command_line->GetSwitchValueASCII(
-      switches::kRegisterStandardSchemes);
-  if (!custom_schemes.empty()) {
-    std::vector<std::string> schemes;
-    base::SplitString(custom_schemes, ',', &schemes);
-    standard_schemes->insert(standard_schemes->end(),
-                             schemes.begin(),
-                             schemes.end());
+  std::vector<std::string> schemes;
+  ConvertStringWithSeparatorToVector(&schemes, ",",
+                                     switches::kRegisterStandardSchemes);
+  if (!schemes.empty()) {
+    for (const std::string& scheme : schemes)
+      standard_schemes->push_back({scheme.c_str(), url::SCHEME_WITHOUT_PORT});
   }
-  standard_schemes->push_back("chrome-extension");
+  standard_schemes->push_back({"chrome-extension", url::SCHEME_WITHOUT_PORT});
 }
 
 void AtomContentClient::AddPepperPlugins(
@@ -109,6 +118,18 @@ void AtomContentClient::AddPepperPlugins(
 
   plugins->push_back(
       CreatePepperFlashInfo(flash_path, flash_version));
+}
+
+void AtomContentClient::AddServiceWorkerSchemes(
+    std::set<std::string>* service_worker_schemes) {
+  std::vector<std::string> schemes;
+  ConvertStringWithSeparatorToVector(&schemes, ",",
+                                     switches::kRegisterServiceWorkerSchemes);
+  if (!schemes.empty()) {
+    for (const std::string& scheme : schemes)
+      service_worker_schemes->insert(scheme);
+  }
+  service_worker_schemes->insert(url::kFileScheme);
 }
 
 }  // namespace atom

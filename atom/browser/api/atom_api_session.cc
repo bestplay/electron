@@ -10,6 +10,7 @@
 #include "atom/browser/api/atom_api_cookies.h"
 #include "atom/browser/api/atom_api_download_item.h"
 #include "atom/browser/api/atom_api_web_contents.h"
+#include "atom/browser/api/atom_api_web_request.h"
 #include "atom/browser/api/save_page_handler.h"
 #include "atom/browser/atom_browser_context.h"
 #include "atom/browser/atom_browser_main_parts.h"
@@ -51,7 +52,7 @@ struct ClearStorageDataOptions {
 uint32 GetStorageMask(const std::vector<std::string>& storage_types) {
   uint32 storage_mask = 0;
   for (const auto& it : storage_types) {
-    auto type = base::StringToLowerASCII(it);
+    auto type = base::ToLowerASCII(it);
     if (type == "appcache")
       storage_mask |= StoragePartition::REMOVE_DATA_MASK_APPCACHE;
     else if (type == "cookies")
@@ -75,7 +76,7 @@ uint32 GetStorageMask(const std::vector<std::string>& storage_types) {
 uint32 GetQuotaMask(const std::vector<std::string>& quota_types) {
   uint32 quota_mask = 0;
   for (const auto& it : quota_types) {
-    auto type = base::StringToLowerASCII(it);
+    auto type = base::ToLowerASCII(it);
     if (type == "temporary")
       quota_mask |= StoragePartition::QUOTA_MANAGED_STORAGE_MASK_TEMPORARY;
     else if (type == "persistent")
@@ -233,7 +234,8 @@ void SetProxyInIO(net::URLRequestContextGetter* getter,
                   const net::ProxyConfig& config,
                   const base::Closure& callback) {
   auto proxy_service = getter->GetURLRequestContext()->proxy_service();
-  proxy_service->ResetConfigService(new net::ProxyConfigServiceFixed(config));
+  proxy_service->ResetConfigService(make_scoped_ptr(
+      new net::ProxyConfigServiceFixed(config)));
   // Refetches and applies the new pac script if provided.
   proxy_service->ForceReloadProxyConfig();
   RunCallbackInUI(callback);
@@ -367,6 +369,14 @@ v8::Local<v8::Value> Session::Cookies(v8::Isolate* isolate) {
   return v8::Local<v8::Value>::New(isolate, cookies_);
 }
 
+v8::Local<v8::Value> Session::WebRequest(v8::Isolate* isolate) {
+  if (web_request_.IsEmpty()) {
+    auto handle = atom::api::WebRequest::Create(isolate, browser_context());
+    web_request_.Reset(isolate, handle.ToV8());
+  }
+  return v8::Local<v8::Value>::New(isolate, web_request_);
+}
+
 // static
 mate::Handle<Session> Session::CreateFrom(
     v8::Isolate* isolate, AtomBrowserContext* browser_context) {
@@ -400,7 +410,8 @@ void Session::BuildPrototype(v8::Isolate* isolate,
       .SetMethod("enableNetworkEmulation", &Session::EnableNetworkEmulation)
       .SetMethod("disableNetworkEmulation", &Session::DisableNetworkEmulation)
       .SetMethod("setCertificateVerifyProc", &Session::SetCertVerifyProc)
-      .SetProperty("cookies", &Session::Cookies);
+      .SetProperty("cookies", &Session::Cookies)
+      .SetProperty("webRequest", &Session::WebRequest);
 }
 
 void ClearWrapSession() {

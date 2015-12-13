@@ -122,7 +122,6 @@ win.show();
     JavaScript와 CSS 또는 플러그인을 실행시킬 수 있도록 허용합니다. 기본값은
     `false`입니다.
   * `images` Boolean - 이미지 지원을 활성화합니다. 기본값은 `true`입니다.
-  * `java` Boolean - Java 지원을 활성화합니다. 기본값은 `false`입니다.
   * `textAreasAreResizable` Boolean - HTML TextArea 요소의 크기를 재조정을
     허용합니다. 기본값은 `true`입니다.
   * `webgl` Boolean - WebGL 지원을 활성화합니다. 기본값은 `true`입니다.
@@ -134,8 +133,6 @@ win.show();
     활성화합니다. 기본값은 `false`입니다.
   * `overlayScrollbars` Boolean - 오버레이 스크롤바를 활성화합니다. 기본값은
     `false`입니다.
-  * `overlayFullscreenVideo` Boolean - 오버레이 전체화면 비디오 기능을 활성화합니다.
-    기본값은 `false`입니다.
   * `sharedWorker` Boolean - SharedWorker 기능을 활성화합니다. 기본값은
     `false`입니다.
   * `directWrite` Boolean - Windows에서 폰트 랜더링을 위해 DirectWrite를
@@ -740,3 +737,9 @@ Linux 플랫폼에선 Unity 데스크톱 환경만 지원합니다. 그리고 �
 윈도우가 모든 워크스페이스에서 표시될지 여부를 반환합니다.
 
 **참고:** 이 API는 Windows에서 언제나 false를 반환합니다.
+
+### `win.setIgnoreMouseEvents(ignore)` _OS X_
+
+* `ignore` Boolean
+
+윈도우에서 일어나는 모든 마우스 이벤트를 무시합니다.
